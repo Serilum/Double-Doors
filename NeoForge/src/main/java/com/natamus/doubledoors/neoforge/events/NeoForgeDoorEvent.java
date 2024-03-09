@@ -2,12 +2,10 @@ package com.natamus.doubledoors.neoforge.events;
 
 import com.natamus.collective.functions.WorldFunctions;
 import com.natamus.doubledoors.events.DoorEvent;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
 @EventBusSubscriber
 public class NeoForgeDoorEvent {
@@ -19,13 +17,5 @@ public class NeoForgeDoorEvent {
 		}
 
 		DoorEvent.onNeighbourNotice(level, e.getPos(), e.getState(), e.getNotifiedSides(), e.getForceRedstoneUpdate());
-	}
-	
-	@SubscribeEvent
-	public static void onDoorClick(PlayerInteractEvent.RightClickBlock e) {
-		if (!DoorEvent.onDoorClick(e.getLevel(), e.getEntity(), e.getHand(), e.getPos(), e.getHitVec())) {
-			e.setCancellationResult(InteractionResult.SUCCESS);
-			e.setCanceled(true);
-		}
 	}
 }

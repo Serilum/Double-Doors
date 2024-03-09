@@ -3,8 +3,6 @@ package com.natamus.doubledoors.util;
 import com.natamus.collective.functions.BlockPosFunctions;
 import com.natamus.doubledoors.config.ConfigHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -20,92 +18,87 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Util {
-	public static boolean isDoorBlock(BlockState blockstate) {
-		Block block = blockstate.getBlock();
+	public static boolean isDoorBlock(BlockState blockState) {
+		Block block = blockState.getBlock();
 		return (block instanceof DoorBlock && ConfigHandler.enableDoors) || (block instanceof TrapDoorBlock && ConfigHandler.enableTrapdoors) || (block instanceof FenceGateBlock && ConfigHandler.enableFenceGates);
 	}
 
-	public static boolean isPressureBlock(BlockState blockstate) {
-		Block block = blockstate.getBlock();
+	public static boolean isPressureBlock(BlockState blockState) {
+		Block block = blockState.getBlock();
 		if (block instanceof WeightedPressurePlateBlock) {
-			return blockstate.getValue(BlockStateProperties.POWER) > 0;
+			return blockState.getValue(BlockStateProperties.POWER) > 0;
 		}
 		if (block instanceof PressurePlateBlock || block instanceof ButtonBlock) {
-			return blockstate.getValue(BlockStateProperties.POWERED);
+			return blockState.getValue(BlockStateProperties.POWERED);
 		}
 		return false;
 	}
-	
-	public static boolean processDoor(Player player, Level level, BlockPos pos, BlockState state, Boolean isopen, boolean playsound) {
-		Block block = state.getBlock();
+
+	public static boolean canOpenByHand(Level level, BlockPos blockPos, BlockState blockState) {
+		Block block = blockState.getBlock();
 		if (block instanceof DoorBlock) {
-			if (state.getValue(DoorBlock.HALF).equals(DoubleBlockHalf.UPPER)) {
-				pos = pos.below().immutable();
-				state = level.getBlockState(pos);
+			DoorBlock doorBlock = (DoorBlock)block;
+			return doorBlock.type().canOpenByHand();
+		}
+		else if (block instanceof TrapDoorBlock){
+			TrapDoorBlock trapDoorBlock = (TrapDoorBlock)block;
+			return !blockState.getMapColor(level, blockPos).equals(MapColor.METAL); // TODO: update after Collective approval to use BlockSetType.
+		}
+
+		return true;
+	}
+
+	public static boolean processDoor(Player player, Level level, BlockPos blockPos, BlockState blockState, Boolean isOpen) {
+		Block block = blockState.getBlock();
+		if (block instanceof DoorBlock) {
+			if (blockState.getValue(DoorBlock.HALF).equals(DoubleBlockHalf.UPPER)) {
+				blockPos = blockPos.below().immutable();
+				blockState = level.getBlockState(blockPos);
 			}
 		}
 		
-		if (isopen == null) {
-			isopen = !state.getValue(BlockStateProperties.OPEN);
+		if (isOpen == null) {
+			isOpen = blockState.getValue(BlockStateProperties.OPEN);
 		}
 		
-		int yoffset = 0;
+		int yOffset = 0;
 		if (!(block instanceof DoorBlock)) {
-			yoffset = 1;
+			yOffset = 1;
 		}
 		
-		List<BlockPos> postoopen = recursivelyOpenDoors(new ArrayList<BlockPos>(Arrays.asList(pos.immutable())), new ArrayList<BlockPos>(), level, pos, pos, block, yoffset);
-		if (postoopen.size() <= 1) {
+		List<BlockPos> posToOpenList = recursivelyOpenDoors(new ArrayList<BlockPos>(Arrays.asList(blockPos.immutable())), new ArrayList<BlockPos>(), level, blockPos, blockPos, block, yOffset);
+		if (posToOpenList.size() <= 1) {
 			return false;
 		}
-		
-		for (BlockPos toopen : postoopen) {
-			BlockState ostate = level.getBlockState(toopen);
-			Block oblock = ostate.getBlock();
+
+		for (BlockPos toOpenBlockPos : posToOpenList) {
+			if (toOpenBlockPos.equals(blockPos)) {
+				continue;
+			}
+
+			BlockState oBlockState = level.getBlockState(toOpenBlockPos);
+			Block oBlock = oBlockState.getBlock();
 			
 			if (block instanceof DoorBlock) {
 				if (!ConfigHandler.enableDoors) {
 					continue;
 				}
-				
-				DoorBlock door = (DoorBlock)oblock;
-				
-				if (playsound) {
-					level.playSound(null, pos, isopen ? SoundEvents.WOODEN_DOOR_OPEN : SoundEvents.WOODEN_DOOR_CLOSE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
-					playsound = false;
-				}
 
-				level.setBlock(toopen, ostate.setValue(DoorBlock.OPEN, isopen), 10);
+				level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen), 10);
 			}
 			else if (block instanceof TrapDoorBlock) {
 				if (!ConfigHandler.enableTrapdoors) {
 					continue;
 				}
-				
-				if (playsound) {
-					if (isopen) {
-						int i = ostate.getMapColor(level, toopen) == MapColor.METAL ? 1037 : 1007;
-						level.levelEvent(null, i, pos, 0);
-					} else {
-						int j = ostate.getMapColor(level, toopen) == MapColor.METAL ? 1036 : 1013;
-						level.levelEvent(null, j, pos, 0);
-					}
-					playsound = false;
-				}
 
-				level.setBlock(toopen, ostate.setValue(BlockStateProperties.OPEN, isopen), 10);
+				level.setBlock(toOpenBlockPos, oBlockState.setValue(BlockStateProperties.OPEN, isOpen), 10);
 			}
 			else if (block instanceof FenceGateBlock) {
 				if (!ConfigHandler.enableFenceGates) {
 					continue;
 				}
-
-				if (playsound) {
-					level.playSound(null, pos, isopen ? SoundEvents.FENCE_GATE_OPEN : SoundEvents.FENCE_GATE_CLOSE, SoundSource.BLOCKS, 1.0F, level.getRandom().nextFloat() * 0.1F + 0.9F);
-					playsound = false;
-				}
 				
-				level.setBlock(toopen, ostate.setValue(DoorBlock.OPEN, isopen), 10);
+				level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen), 10);
 			}
 		}
 
@@ -113,37 +106,37 @@ public class Util {
 			player.swing(InteractionHand.MAIN_HAND);
 		}
 
-		return postoopen.size() > 1;
+		return posToOpenList.size() > 1;
 	}
 	
-	private static List<BlockPos> recursivelyOpenDoors(List<BlockPos> postoopen, List<BlockPos> ignoreoopen, Level level, BlockPos originalpos, BlockPos pos, Block block, int yoffset) {
-		Iterator<BlockPos> blocksaround = BlockPos.betweenClosedStream(pos.getX()-1, pos.getY()-yoffset, pos.getZ()-1, pos.getX()+1, pos.getY()+yoffset, pos.getZ()+1).iterator();
+	private static List<BlockPos> recursivelyOpenDoors(List<BlockPos> posToOpenList, List<BlockPos> ignoreOpenList, Level level, BlockPos originalBlockPos, BlockPos blockPos, Block block, int yOffset) {
+		Iterator<BlockPos> blocksaround = BlockPos.betweenClosedStream(blockPos.getX()-1, blockPos.getY()-yOffset, blockPos.getZ()-1, blockPos.getX()+1, blockPos.getY()+yOffset, blockPos.getZ()+1).iterator();
 		while (blocksaround.hasNext()) {
 			BlockPos bpa = blocksaround.next();
-			if (postoopen.contains(bpa)) {
+			if (posToOpenList.contains(bpa)) {
 				continue;
 			}
 			
-			if (!BlockPosFunctions.withinDistance(originalpos, bpa, ConfigHandler.recursiveOpeningMaxBlocksDistance)) {
+			if (!BlockPosFunctions.withinDistance(originalBlockPos, bpa, ConfigHandler.recursiveOpeningMaxBlocksDistance)) {
 				continue;
 			}
 			
-			BlockState ostate = level.getBlockState(bpa);
-			Block oblock = ostate.getBlock();
-			if (Util.isDoorBlock(ostate)) {
-				if (oblock.getName().equals(block.getName())) {
-					postoopen.add(bpa.immutable());
+			BlockState oBlockState = level.getBlockState(bpa);
+			Block oBlock = oBlockState.getBlock();
+			if (Util.isDoorBlock(oBlockState)) {
+				if (oBlock.getName().equals(block.getName())) {
+					posToOpenList.add(bpa.immutable());
 					
 					if (ConfigHandler.enableRecursiveOpening) {
-						recursivelyOpenDoors(postoopen, ignoreoopen, level, originalpos, bpa, block, yoffset);
+						recursivelyOpenDoors(posToOpenList, ignoreOpenList, level, originalBlockPos, bpa, block, yOffset);
 					}
 					continue;
 				}
 			}
 			
-			ignoreoopen.add(bpa.immutable());
+			ignoreOpenList.add(bpa.immutable());
 		}
 		
-		return postoopen;
+		return posToOpenList;
 	}
 }

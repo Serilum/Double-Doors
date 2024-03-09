@@ -1,6 +1,7 @@
 plugins {
     id 'idea'
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
     id 'org.spongepowered.mixin' version "0.7-SNAPSHOT" // mixin
 }
 
@@ -9,15 +10,16 @@ base {
 }
 
 mixin { // mixin
-    add sourceSets.main, "doubledoors_forge.refmap.json" // mixin
-    config 'doubledoors_forge.mixins.json' // mixin
+    add sourceSets.main, "doubledoors.refmap.json" // mixin
+    config 'doubledoors.mixins.json' // mixin
     
     debug.verbose = true // mixin
     debug.export = true // mixin
 } // mixin
 
 minecraft {
-    mappings channel: 'official', version: minecraft_version
+    //mappings channel: 'official', version: minecraft_version
+    mappings channel: "parchment", version: "1.20.3-2023.12.31-${minecraft_version}"
 
     copyIdeResources = true //Calls processResources when in dev
 
@@ -31,7 +33,7 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            arg "-mixin.config=doubledoors_forge.mixins.json" // mixin
+            arg "-mixin.config=doubledoors.mixins.json" // mixin
 
             ideaModule "${rootProject.name}.${project.name}.main"
             taskName 'Client'
@@ -47,7 +49,7 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-            arg "-mixin.config=doubledoors_forge.mixins.json" // mixin
+            arg "-mixin.config=doubledoors.mixins.json" // mixin
 
             ideaModule "${rootProject.name}.${project.name}.main"
             taskName 'Server'
@@ -63,7 +65,7 @@ minecraft {
 
         data {
             workingDirectory project.file('run')
-            arg "-mixin.config=doubledoors_forge.mixins.json" // mixin
+            arg "-mixin.config=doubledoors.mixins.json" // mixin
             
             ideaModule "${rootProject.name}.${project.name}.main"
             args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
