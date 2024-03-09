@@ -1,19 +1,17 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.natamus.doubledoors.forge.mixin",
+  "package": "com.natamus.doubledoors.mixin",
   "compatibilityLevel": "JAVA_17",
-  "refmap": "doubledoors_forge.refmap.json",
   "mixins": [
-
+	"DoorBlockMixin",
+	"TrapDoorBlockMixin"
   ],
   "client": [
-  
   ],
   "server": [
-
   ],
   "injectors": {
-    "defaultRequire": 1
+	"defaultRequire": 1
   }
 }
