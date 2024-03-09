@@ -1,20 +1,17 @@
 package com.natamus.doubledoors.events;
 
+import com.natamus.collective.functions.BlockPosFunctions;
 import com.natamus.doubledoors.util.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.ButtonBlock;
-import net.minecraft.world.level.block.PressurePlateBlock;
-import net.minecraft.world.level.block.WeightedPressurePlateBlock;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 
 import java.util.ArrayList;
@@ -26,102 +23,115 @@ public class DoorEvent {
 	private static final List<BlockPos> prevpoweredpos = new ArrayList<BlockPos>();
 	private static final HashMap<BlockPos, Integer> prevbuttonpos = new HashMap<BlockPos, Integer>();
 	
-	public static void onNeighbourNotice(Level world, BlockPos pos, BlockState state, EnumSet<Direction> notifiedSides, boolean forceRedstoneUpdate) {
-		if (world.isClientSide) {
+	public static void onNeighbourNotice(Level level, BlockPos blockPos, BlockState blockState, EnumSet<Direction> notifiedSides, boolean forceRedstoneUpdate) {
+		if (level.isClientSide) {
 			return;
 		}
 		
-		BooleanProperty proppowered = BlockStateProperties.POWERED;
-		IntegerProperty weightedpower = BlockStateProperties.POWER;
-		pos = pos.immutable();
-		Block block = state.getBlock();
+		BooleanProperty isPoweredProperty = BlockStateProperties.POWERED;
+		IntegerProperty weightPowerProperty = BlockStateProperties.POWER;
+
+		Block block = blockState.getBlock();
 
 		if (!(block instanceof PressurePlateBlock) && !(block instanceof WeightedPressurePlateBlock)) {
-			if (!(block instanceof ButtonBlock)) {
+			if (!(block instanceof ButtonBlock) && !(block instanceof LeverBlock)) {
 				return;
 			}
 			else {
-				if (prevbuttonpos.containsKey(pos)) {
-					prevbuttonpos.remove(pos);
+				if (prevbuttonpos.containsKey(blockPos)) {
+					prevbuttonpos.remove(blockPos);
 				}
 				else {
-					prevbuttonpos.put(pos, 1);
+					prevbuttonpos.put(blockPos.immutable(), 1);
 					return;
 				}
 
-				if (!state.getValue(proppowered)) {
-					if (!prevpoweredpos.contains(pos)) {
+				if (!blockState.getValue(isPoweredProperty)) {
+					if (!prevpoweredpos.contains(blockPos)) {
 						return;
 					}
-					prevpoweredpos.remove(pos);
+					prevpoweredpos.remove(blockPos);
 				}
 			}
 		}
 		else if (block instanceof WeightedPressurePlateBlock) {
-			if (state.getValue(weightedpower) == 0) {
-				if (!prevpoweredpos.contains(pos)) {
+			if (blockState.getValue(weightPowerProperty) == 0) {
+				if (!prevpoweredpos.contains(blockPos)) {
 					return;
 				}
 			}
 		}
 		else {
-			if (!state.getValue(proppowered)) {
-				if (!prevpoweredpos.contains(pos)) {
+			if (!blockState.getValue(isPoweredProperty)) {
+				if (!prevpoweredpos.contains(blockPos)) {
 					return;
 				}
 			}
 		}
 
-		boolean stateprop;
+		boolean blockStateprop;
 		if (block instanceof WeightedPressurePlateBlock) {
-			stateprop = state.getValue(weightedpower) > 0;
+			blockStateprop = blockState.getValue(weightPowerProperty) > 0;
 		}
 		else {
-			stateprop = state.getValue(proppowered);
+			blockStateprop = blockState.getValue(isPoweredProperty);
 		}
 
-		int radius = block instanceof ButtonBlock ? 2 : 1;
+		int radius = 1;
 
-		BlockPos doorpos = null;
-		for (BlockPos npos : BlockPos.betweenClosed(pos.getX()-radius, pos.getY()-1, pos.getZ()-radius, pos.getX()+radius, pos.getY()+1, pos.getZ()+radius)) {
-			BlockState ostate = world.getBlockState(npos);
-			if (Util.isDoorBlock(ostate)) {
-				doorpos = npos;
+		BlockPos doorBlockPos = null;
+
+		for (BlockPos aroundPos : BlockPosFunctions.getBlocksAround(blockPos, false)) {
+			BlockState oBlockState = level.getBlockState(aroundPos);
+			if (Util.isDoorBlock(oBlockState)) {
+				doorBlockPos = aroundPos.immutable();
 				break;
 			}
 		}
 
-		if (doorpos != null) {
-			if (Util.processDoor(null, world, doorpos, world.getBlockState(doorpos), stateprop, true)) {
-				if (stateprop) {
-					prevpoweredpos.add(pos);
+		if (doorBlockPos == null) {
+			for (BlockPos aroundPos : BlockPos.betweenClosed(blockPos.getX() - radius, blockPos.getY() - 1, blockPos.getZ() - radius, blockPos.getX() + radius, blockPos.getY() + 1, blockPos.getZ() + radius)) {
+				BlockState oBlockState = level.getBlockState(aroundPos);
+				if (Util.isDoorBlock(oBlockState)) {
+					doorBlockPos = aroundPos;
+					break;
+				}
+			}
+		}
+
+
+		if (doorBlockPos != null) {
+			if (Util.processDoor(null, level, doorBlockPos, level.getBlockState(doorBlockPos), blockStateprop)) {
+				if (blockStateprop) {
+					prevpoweredpos.add(blockPos.immutable());
 				}
 			}
 		}
 	}
 	
-	public static boolean onDoorClick(Level level, Player player, InteractionHand hand, BlockPos cpos, BlockHitResult hitVec) {
+	public static void onDoorClick(Level level, Player player, InteractionHand interactionHand, BlockPos blockPos, BlockHitResult blockHitResult) {
 		if (level.isClientSide) {
-			return true;
+			return;
 		}
 
-		if (!hand.equals(InteractionHand.MAIN_HAND)) {
-			return true;
+		if (!interactionHand.equals(InteractionHand.MAIN_HAND)) {
+			return;
 		}
 		
-		if (player.isShiftKeyDown()) {
-			return true;
+		if (player.isCrouching()) {
+			return;
 		}
 		
-		BlockState clickstate = level.getBlockState(cpos);
+		BlockState clickstate = level.getBlockState(blockPos);
 
 		if (!Util.isDoorBlock(clickstate)) {
-			return true;
-		}
-		if (clickstate.getMaterial().equals(Material.METAL)) {
-			return true;
+			return;
 		}
 
-		return !Util.processDoor(player, level, cpos, clickstate, null, false);
+		if (!Util.canOpenByHand(level, blockPos, clickstate)) {
+			return;
+		}
+
+		Util.processDoor(player, level, blockPos, clickstate, null);
 	}
 }
