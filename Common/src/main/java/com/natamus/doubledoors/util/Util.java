@@ -10,7 +10,6 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraft.world.level.material.Material;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,10 +31,6 @@ public class Util {
 			return blockState.getValue(BlockStateProperties.POWERED);
 		}
 		return false;
-	}
-
-	public static boolean canOpenByHand(Level level, BlockPos blockPos, BlockState blockState) {
-		return !blockState.getMaterial().equals(Material.METAL);
 	}
 
 	public static boolean processDoor(Player player, Level level, BlockPos blockPos, BlockState blockState, Boolean isOpen) {
