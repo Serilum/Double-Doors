@@ -1,5 +1,6 @@
 package com.natamus.doubledoors.events;
 
+import com.natamus.collective.functions.BlockFunctions;
 import com.natamus.collective.functions.BlockPosFunctions;
 import com.natamus.doubledoors.util.Util;
 import net.minecraft.core.BlockPos;
@@ -122,16 +123,16 @@ public class DoorEvent {
 			return;
 		}
 		
-		BlockState clickstate = level.getBlockState(blockPos);
+		BlockState clickState = level.getBlockState(blockPos);
 
-		if (!Util.isDoorBlock(clickstate)) {
+		if (!Util.isDoorBlock(clickState)) {
 			return;
 		}
 
-		if (!Util.canOpenByHand(level, blockPos, clickstate)) {
+		if (!BlockFunctions.canOpenByHand(clickState)) {
 			return;
 		}
 
-		Util.processDoor(player, level, blockPos, clickstate, null);
+		Util.processDoor(player, level, blockPos, clickState, null);
 	}
 }

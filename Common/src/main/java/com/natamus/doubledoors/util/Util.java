@@ -10,7 +10,6 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraft.world.level.material.MapColor;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,20 +31,6 @@ public class Util {
 			return blockState.getValue(BlockStateProperties.POWERED);
 		}
 		return false;
-	}
-
-	public static boolean canOpenByHand(Level level, BlockPos blockPos, BlockState blockState) {
-		Block block = blockState.getBlock();
-		if (block instanceof DoorBlock) {
-			DoorBlock doorBlock = (DoorBlock)block;
-			return doorBlock.type().canOpenByHand();
-		}
-		else if (block instanceof TrapDoorBlock){
-			TrapDoorBlock trapDoorBlock = (TrapDoorBlock)block;
-			return !blockState.getMapColor(level, blockPos).equals(MapColor.METAL); // TODO: update after Collective approval to use BlockSetType.
-		}
-
-		return true;
 	}
 
 	public static boolean processDoor(Player player, Level level, BlockPos blockPos, BlockState blockState, Boolean isOpen) {
