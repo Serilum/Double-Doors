@@ -3,6 +3,7 @@ package com.natamus.doubledoors.util;
 import com.natamus.collective.functions.BlockPosFunctions;
 import com.natamus.doubledoors.config.ConfigHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -83,7 +84,8 @@ public class Util {
 					continue;
 				}
 				
-				level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen), 10);
+				Direction facing = blockState.getValue(FenceGateBlock.FACING);
+				level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen).setValue(FenceGateBlock.FACING, facing), 10);
 			}
 		}
 
