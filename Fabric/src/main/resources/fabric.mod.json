@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "id": "doubledoors",
+  "version": "5.5",
+
+  "name": "Double Doors",
+  "description": "Adds the ability for identical double doors, trapdoors and fence gates to be opened simultaneously via click or pressure plates and buttons.",
+  "authors": [ "Rick South" ],
+  "contact": {
+    "homepage": "https://serilum.com/mod/double-doors",
+    "sources": "https://github.com/Serilum/Double-Doors",
+    "issues": "https://github.com/Serilum/.issue-tracker/labels/Mod:%20Double%20Doors"
+  },
+
+  "license": "All Right Reserved",
+  "icon": "icon.png",
+
+  "environment": "*",
+  "entrypoints": { "main": [ "com.natamus.doubledoors.ModFabric" ], "modmenu": [ "com.natamus.doubledoors.fabric.config.IntegrateModMenu" ] },
+  "mixins": [
+    "doubledoors.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.12.5",
+    "fabric": "*",
+    "minecraft": ">=1.20",
+    "java": ">=17",
+    "collective": ">=7.53"
+  },
+
+  "custom": {
+    "modmenu": {
+      "links": {
+        "Donate <3" : "https://ricksouth.com/donate"
+      }
+    }
+  },
+
+  "contributors": [
+	  " ",
+	  "Thank you very much to my Membership sponsors for supporting the development of this mod!",
+	  " ",
+	  "If you would like to contribute too, check out https://serilum.com/donate.",
+	  " ",
+	  "Membership sponsors:",
+	  " Alister",
+	  " Andrean Olgo",
+	  " aternosorg",
+	  " BirdieMiner",
+	  " Cherriesaurus",
+	  " Jack",
+	  " Jeremy Langford",
+	  " Michael W. S.",
+	  " pepe1191",
+	  " Shana Gitnick",
+	  " Tyler Behl"
+  ]
+}
