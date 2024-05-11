@@ -1,6 +1,8 @@
 package com.natamus.doubledoors.util;
 
 import com.natamus.collective.functions.BlockPosFunctions;
+import com.natamus.collective.functions.DataFunctions;
+import com.natamus.collective.services.Services;
 import com.natamus.doubledoors.config.ConfigHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,6 +14,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
+import java.io.File;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -125,5 +132,59 @@ public class Util {
 		}
 		
 		return posToOpenList;
+	}
+
+
+	public static void checkForOtherModdedDoubleDoorFunctionality() {
+		if (!ConfigHandler.enableModIncompatibilityCheck) {
+			return;
+		}
+
+		try {
+			if (Services.MODLOADER.isModLoaded("quark")) {
+				String quarkConfigPath = DataFunctions.getConfigDirectory() + File.separator + "quark-common.toml";
+				File quarkConfig = new File(quarkConfigPath);
+
+				if (quarkConfig.exists()) {
+					List<String> doorConfigKeys = Arrays.asList("\"Double Door Opening\"", "\"Enable Doors\"", "\"Enable Fence Gates\"");
+					String quarkConfigContent = Files.readString(Path.of(quarkConfigPath), StandardCharsets.UTF_8);
+
+					boolean writeOutput = false;
+
+					StringBuilder output = new StringBuilder();
+					for (String line : quarkConfigContent.split("\n")) {
+						if (output.length() > 0) {
+							output.append("\n");
+						}
+
+						for (String doorConfigKey : doorConfigKeys) {
+							if (line.contains(doorConfigKey)) {
+								if (line.contains("true")) {
+									line = line.replace("true", "false");
+									writeOutput = true;
+									break;
+								}
+							}
+						}
+
+						output.append(line);
+					}
+
+					if (writeOutput) {
+						try (PrintWriter printWriter = new PrintWriter(quarkConfigPath)) {
+							printWriter.println(output);
+						}
+					}
+				}
+				else {
+					String quarkConfigIfNewInstance = "[tweaks]\n	\"Double Door Opening\" = false\n\n	[tweaks.double_door_opening]\n		\"Enable Doors\" = false\n		\"Enable Fence Gates\" = false\n		\"Ignore Anti Overlap\" = false";
+
+					try (PrintWriter printWriter = new PrintWriter(quarkConfigPath)) {
+						printWriter.println(quarkConfigIfNewInstance);
+					}
+				}
+			}
+		}
+		catch (Exception ignored) { }
 	}
 }

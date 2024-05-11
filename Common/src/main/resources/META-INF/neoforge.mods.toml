@@ -14,7 +14,7 @@ description='''Adds the ability for identical double doors, trapdoors and fence 
 '''
 credits='''Thank you very much to my Membership sponsors for supporting the development of this mod:  
 
-Alister, Andrean Olgo, aternosorg, BirdieMiner, Cherriesaurus, Jack, Jeremy Langford, Michael W. S., pepe1191, Shana Gitnick, Tyler Behl   
+Alister, Andrean Olgo, aternosorg, BirdieMiner, Cherriesaurus, Jack, Jeremy Langford, Michael W. S., Shana Gitnick, Tyler Behl   
 
 If you would like to contribute too, check out https://serilum.com/donate. Appreciate it! <3   
 '''
@@ -22,7 +22,7 @@ If you would like to contribute too, check out https://serilum.com/donate. Appre
 [[dependencies.doubledoors]]
     modId="collective"
     type="required"
-    versionRange="[7.57,)"
+    versionRange="[7.58,)"
     ordering="NONE"
     side="BOTH"
 
