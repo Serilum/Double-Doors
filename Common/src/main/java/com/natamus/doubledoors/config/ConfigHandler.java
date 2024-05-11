@@ -15,6 +15,7 @@ public class ConfigHandler extends DuskConfig {
 	@Entry public static boolean enableDoors = true;
 	@Entry public static boolean enableFenceGates = true;
 	@Entry public static boolean enableTrapdoors = true;
+	@Entry public static boolean enableModIncompatibilityCheck = true;
 
 	public static void initConfig() {
 		configMetaData.put("enableRecursiveOpening", Arrays.asList(
@@ -31,6 +32,9 @@ public class ConfigHandler extends DuskConfig {
 		));
 		configMetaData.put("enableTrapdoors", Arrays.asList(
 			"When enables, the mod works with double trapdoors."
+		));
+		configMetaData.put("enableModIncompatibilityCheck", Arrays.asList(
+			"Checks if there are other mods loaded with double door functionality, such as Quark. If found, it edits a line in their config to disable double doors. Fixes doors not opening due to code being ran twice."
 		));
 
 		DuskConfig.init(Reference.NAME, Reference.MOD_ID, ConfigHandler.class);
