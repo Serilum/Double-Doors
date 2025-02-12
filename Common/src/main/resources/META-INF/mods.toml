@@ -6,7 +6,7 @@ logoFile="icon.png"
 
 [[mods]]
 modId="doubledoors"
-version="5.9"
+version="6.1"
 displayName="Double Doors"
 displayURL="https://serilum.com/mod/double-doors"
 authors="Rick South"
@@ -14,7 +14,7 @@ description='''Adds the ability for identical double doors, trapdoors and fence 
 '''
 credits='''Thank you very much to my Membership sponsors for supporting the development of this mod:  
 
-Alister, Andrean Olgo, aternosorg, Cherriesaurus, Michael W. S., Nahuel Fernandez, Shana Gitnick, Tyler Behl   
+Alister, Andrean Olgo, aternosorg, Cherriesaurus, David Sanchez, drdog111, Michael W. S., t128, Tyler Behl, XAgent   
 
 If you would like to contribute too, check out https://serilum.com/donate. Appreciate it! <3   
 '''
@@ -22,7 +22,7 @@ If you would like to contribute too, check out https://serilum.com/donate. Appre
 [[dependencies.doubledoors]]
     modId="collective"
     mandatory=true
-    versionRange="[7.80,)"
+    versionRange="[7.91,)"
     ordering="NONE"
     side="BOTH"
 
