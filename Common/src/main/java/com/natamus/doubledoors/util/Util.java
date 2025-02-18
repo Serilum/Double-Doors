@@ -5,7 +5,6 @@ import com.natamus.collective.functions.DataFunctions;
 import com.natamus.collective.services.Services;
 import com.natamus.doubledoors.config.ConfigHandler;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -90,9 +89,8 @@ public class Util {
 				if (!ConfigHandler.enableFenceGates) {
 					continue;
 				}
-				
-				Direction facing = blockState.getValue(FenceGateBlock.FACING);
-				level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen).setValue(FenceGateBlock.FACING, facing), 10);
+
+				level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen), 10);
 			}
 		}
 
