@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -110,7 +111,7 @@ public class DoorEvent {
 		}
 	}
 	
-	public static void onDoorClick(Level level, Player player, InteractionHand interactionHand, BlockPos blockPos, BlockHitResult blockHitResult) {
+	public static void onDoorClick(Level level, @Nullable Player player, InteractionHand interactionHand, BlockPos blockPos, BlockHitResult blockHitResult) {
 		if (level.isClientSide) {
 			return;
 		}
@@ -118,9 +119,11 @@ public class DoorEvent {
 		if (!interactionHand.equals(InteractionHand.MAIN_HAND)) {
 			return;
 		}
-		
-		if (player.isCrouching()) {
-			return;
+
+		if (player != null) {
+			if (player.isCrouching()) {
+				return;
+			}
 		}
 		
 		BlockState clickState = level.getBlockState(blockPos);

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = FenceGateBlock.class, priority = 1001)
 public class FenceGateBlockMixin {
-	@Inject(method = "useWithoutItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playSound(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/core/BlockPos;Lnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FF)V"))
+	@Inject(method = "useWithoutItem", at = @At(value = "RETURN"))
 	public void use(BlockState blockState, Level level, BlockPos blockPos, Player player, BlockHitResult blockHitResult, CallbackInfoReturnable<InteractionResult> cir) {
 		DoorEvent.onDoorClick(level, player, InteractionHand.MAIN_HAND, blockPos, blockHitResult);
 	}

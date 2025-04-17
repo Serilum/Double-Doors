@@ -5,6 +5,7 @@ import com.natamus.collective.functions.DataFunctions;
 import com.natamus.collective.services.Services;
 import com.natamus.doubledoors.config.ConfigHandler;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -48,9 +49,14 @@ public class Util {
 				blockState = level.getBlockState(blockPos);
 			}
 		}
-		
+
 		if (isOpen == null) {
 			isOpen = blockState.getValue(BlockStateProperties.OPEN);
+		}
+
+		Direction facing = null;
+		if (block instanceof FenceGateBlock) {
+			facing = blockState.getValue(FenceGateBlock.FACING);
 		}
 		
 		int yOffset = 0;
@@ -58,7 +64,7 @@ public class Util {
 			yOffset = 1;
 		}
 		
-		List<BlockPos> posToOpenList = recursivelyOpenDoors(new ArrayList<BlockPos>(Arrays.asList(blockPos.immutable())), new ArrayList<BlockPos>(), level, blockPos, blockPos, block, yOffset);
+		List<BlockPos> posToOpenList = recursivelyOpenDoors(new ArrayList<>(Arrays.asList(blockPos.immutable())), new ArrayList<>(), level, blockPos, blockPos, block, yOffset);
 		if (posToOpenList.size() <= 1) {
 			return false;
 		}
@@ -70,28 +76,36 @@ public class Util {
 
 			BlockState oBlockState = level.getBlockState(toOpenBlockPos);
 			Block oBlock = oBlockState.getBlock();
-			
-			if (block instanceof DoorBlock) {
-				if (!ConfigHandler.enableDoors) {
-					continue;
-				}
 
-				level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen), 10);
-			}
-			else if (block instanceof TrapDoorBlock) {
-				if (!ConfigHandler.enableTrapdoors) {
-					continue;
-				}
+            switch (block) {
+                case DoorBlock doorBlock -> {
+                    if (!ConfigHandler.enableDoors) {
+                        continue;
+                    }
 
-				level.setBlock(toOpenBlockPos, oBlockState.setValue(BlockStateProperties.OPEN, isOpen), 10);
-			}
-			else if (block instanceof FenceGateBlock) {
-				if (!ConfigHandler.enableFenceGates) {
-					continue;
-				}
+                    level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen), 10);
+                }
+                case TrapDoorBlock trapDoorBlock -> {
+                    if (!ConfigHandler.enableTrapdoors) {
+                        continue;
+                    }
 
-				level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen), 10);
-			}
+                    level.setBlock(toOpenBlockPos, oBlockState.setValue(BlockStateProperties.OPEN, isOpen), 10);
+                }
+                case FenceGateBlock fenceGateBlock -> {
+                    if (!ConfigHandler.enableFenceGates) {
+                        continue;
+                    }
+
+                    if (facing != null) {
+                        level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen).setValue(FenceGateBlock.FACING, facing), 10);
+                    } else {
+                        level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen), 10);
+                    }
+                }
+                default -> {
+                }
+            }
 		}
 
 		if (player != null) {
@@ -151,7 +165,7 @@ public class Util {
 
 					StringBuilder output = new StringBuilder();
 					for (String line : quarkConfigContent.split("\n")) {
-						if (output.length() > 0) {
+						if (!output.isEmpty()) {
 							output.append("\n");
 						}
 
