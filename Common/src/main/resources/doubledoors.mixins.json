@@ -4,15 +4,16 @@
   "package": "com.natamus.doubledoors.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-	"DoorBlockMixin",
-	"FenceGateBlockMixin",
-	"TrapDoorBlockMixin"
+    "DoorBlockMixin",
+    "FenceGateBlockMixin",
+    "InteractWithDoorMixin",
+    "TrapDoorBlockMixin"
   ],
   "client": [
   ],
   "server": [
   ],
   "injectors": {
-	"defaultRequire": 1
+    "defaultRequire": 1
   }
 }
