@@ -26,7 +26,9 @@ import java.util.List;
 
 public class Util {
 	public static boolean isDoorBlock(BlockState blockState) {
-		Block block = blockState.getBlock();
+		return isDoorBlock(blockState.getBlock());
+	}
+	public static boolean isDoorBlock(Block block) {
 		return (block instanceof DoorBlock && ConfigHandler.enableDoors) || (block instanceof TrapDoorBlock && ConfigHandler.enableTrapdoors) || (block instanceof FenceGateBlock && ConfigHandler.enableFenceGates);
 	}
 
@@ -96,11 +98,9 @@ public class Util {
 					continue;
 				}
 
-				if (facing != null) {
+				Direction oFacing = oBlockState.getValue(FenceGateBlock.FACING);
+				if (oFacing.equals(facing) || oFacing.getOpposite().equals(facing)) {
 					level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen).setValue(FenceGateBlock.FACING, facing), 10);
-				}
-				else {
-					level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen), 10);
 				}
 			}
 		}
