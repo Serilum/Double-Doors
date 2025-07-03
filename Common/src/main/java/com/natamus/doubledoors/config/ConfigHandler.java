@@ -13,8 +13,8 @@ public class ConfigHandler extends DuskConfig {
 	@Entry public static boolean enableRecursiveOpening = true;
 	@Entry(min = 1, max = 64) public static int recursiveOpeningMaxBlocksDistance = 10;
 	@Entry public static boolean enableDoors = true;
-	@Entry public static boolean enableFenceGates = true;
-	@Entry public static boolean enableTrapdoors = true;
+	@Entry public static boolean enableFenceGates = false;
+	@Entry public static boolean enableTrapdoors = false;
 	@Entry public static boolean enableModIncompatibilityCheck = true;
 
 	public static void initConfig() {

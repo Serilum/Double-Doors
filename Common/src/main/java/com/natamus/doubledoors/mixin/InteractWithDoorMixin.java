@@ -27,12 +27,16 @@ import java.util.Set;
 @Mixin(value = InteractWithDoor.class, priority = 1001)
 public class InteractWithDoorMixin {
     @Inject(method = "closeDoorsThatIHaveOpenedOrPassedThrough(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/level/pathfinder/Node;Lnet/minecraft/world/level/pathfinder/Node;Ljava/util/Set;Ljava/util/Optional;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/DoorBlock;setOpen(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Z)V"), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private static void closeDoorsThatIHaveOpenedOrPassedThrough(ServerLevel serverLevel, LivingEntity $$1, Node $$2, Node $$3, Set<GlobalPos> $$4, Optional<List<LivingEntity>> $$5, CallbackInfo ci, Iterator<?> $$6, GlobalPos $$7, BlockPos blockPos, BlockState blockState, DoorBlock $$10) {
-        Util.processDoor(null, serverLevel, blockPos.immutable(), blockState, !blockState.getValue(BlockStateProperties.OPEN));
+    private static void closeDoorsThatIHaveOpenedOrPassedThrough(ServerLevel serverLevel, LivingEntity $$1, Node $$2, Node $$3, Set<GlobalPos> $$4, Optional<List<LivingEntity>> $$5, CallbackInfo ci, Iterator<?> $$6, GlobalPos $$7, BlockPos blockPos, BlockState blockState, DoorBlock doorBlock) {
+        if (Util.isDoorBlock(doorBlock)) {
+            Util.processDoor(null, serverLevel, blockPos.immutable(), blockState, !blockState.getValue(BlockStateProperties.OPEN));
+        }
     }
 
     @Inject(method = "rememberDoorToClose(Lnet/minecraft/world/entity/ai/behavior/declarative/MemoryAccessor;Ljava/util/Optional;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;)Ljava/util/Optional;", at = @At(value = "HEAD"))
     private static void rememberDoorToClose(MemoryAccessor<OptionalBox.Mu, Set<GlobalPos>> $$0, Optional<Set<GlobalPos>> $$1, ServerLevel serverLevel, BlockPos blockPos, CallbackInfoReturnable<Optional<Set<GlobalPos>>> cir) {
-        Util.processDoor(null, serverLevel, blockPos, serverLevel.getBlockState(blockPos), null);
+        if (Util.isDoorBlock(serverLevel.getBlockState(blockPos))) {
+            Util.processDoor(null, serverLevel, blockPos, serverLevel.getBlockState(blockPos), null);
+        }
     }
 }
