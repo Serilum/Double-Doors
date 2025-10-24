@@ -51,6 +51,10 @@ public class Util {
 				blockState = level.getBlockState(blockPos);
 			}
 		}
+
+		if (!blockState.hasProperty(BlockStateProperties.OPEN)) {
+			return false;
+		}
 		
 		if (isOpen == null) {
 			isOpen = blockState.getValue(BlockStateProperties.OPEN);
