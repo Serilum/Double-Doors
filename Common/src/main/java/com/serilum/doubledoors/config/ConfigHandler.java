@@ -1,7 +1,7 @@
-package com.natamus.doubledoors.config;
+package com.serilum.doubledoors.config;
 
 import com.natamus.collective.config.DuskConfig;
-import com.natamus.doubledoors.util.Reference;
+import com.serilum.doubledoors.util.Reference;
 
 import java.util.Arrays;
 import java.util.HashMap;

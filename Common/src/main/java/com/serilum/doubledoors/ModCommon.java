@@ -1,7 +1,7 @@
-package com.natamus.doubledoors;
+package com.serilum.doubledoors;
 
-import com.natamus.doubledoors.config.ConfigHandler;
-import com.natamus.doubledoors.util.Util;
+import com.serilum.doubledoors.config.ConfigHandler;
+import com.serilum.doubledoors.util.Util;
 
 public class ModCommon {
 

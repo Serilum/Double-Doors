@@ -1,10 +1,10 @@
-package com.natamus.doubledoors;
+package com.serilum.doubledoors;
 
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.check.ShouldLoadCheck;
-import com.natamus.doubledoors.forge.config.IntegrateForgeConfig;
-import com.natamus.doubledoors.forge.events.ForgeDoorEvent;
-import com.natamus.doubledoors.util.Reference;
+import com.serilum.doubledoors.forge.config.IntegrateForgeConfig;
+import com.serilum.doubledoors.forge.events.ForgeDoorEvent;
+import com.serilum.doubledoors.util.Reference;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -32,7 +32,7 @@ public class ModForge {
 	}
 
 	private void loadComplete(final FMLLoadCompleteEvent event) {
-    	MinecraftForge.EVENT_BUS.register(ForgeDoorEvent.class);
+		MinecraftForge.EVENT_BUS.register(ForgeDoorEvent.class);
 	}
 
 	private static void setGlobalConstants() {

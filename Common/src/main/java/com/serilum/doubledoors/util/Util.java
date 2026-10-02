@@ -1,9 +1,9 @@
-package com.natamus.doubledoors.util;
+package com.serilum.doubledoors.util;
 
 import com.natamus.collective.functions.BlockPosFunctions;
 import com.natamus.collective.functions.DataFunctions;
 import com.natamus.collective.services.Services;
-import com.natamus.doubledoors.config.ConfigHandler;
+import com.serilum.doubledoors.config.ConfigHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;

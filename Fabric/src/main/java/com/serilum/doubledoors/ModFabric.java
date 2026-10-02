@@ -1,10 +1,10 @@
-package com.natamus.doubledoors;
+package com.serilum.doubledoors;
 
 import com.natamus.collective.check.RegisterMod;
 import com.natamus.collective.check.ShouldLoadCheck;
 import com.natamus.collective.fabric.callbacks.CollectiveBlockEvents;
-import com.natamus.doubledoors.events.DoorEvent;
-import com.natamus.doubledoors.util.Reference;
+import com.serilum.doubledoors.events.DoorEvent;
+import com.serilum.doubledoors.util.Reference;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
