@@ -16,14 +16,14 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 
 import org.jetbrains.annotations.Nullable;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DoorEvent {
-	private static final List<BlockPos> prevpoweredpos = new ArrayList<BlockPos>();
-	private static final HashMap<BlockPos, Integer> prevbuttonpos = new HashMap<BlockPos, Integer>();
+	// Positions of redstone sources that are currently powered and have opened doors.
+	// Used both to avoid processing duplicate notifications for the same state, and to only close doors we opened.
+	private static final Set<BlockPos> prevpoweredpos = new HashSet<BlockPos>();
 	
 	public static void onNeighbourNotice(Level level, BlockPos blockPos, BlockState blockState, EnumSet<Direction> notifiedSides, boolean forceRedstoneUpdate) {
 		if (level.isClientSide()) {
@@ -40,15 +40,14 @@ public class DoorEvent {
 				return;
 			}
 			else {
-				if (prevbuttonpos.containsKey(blockPos)) {
-					prevbuttonpos.remove(blockPos);
+				// The number of neighbour notifications per lever/button toggle differs between Minecraft versions
+				// and loaders (1 on Fabric 26.3, previously 2), so dedupe by tracked state instead of by notification parity.
+				if (blockState.getValue(isPoweredProperty)) {
+					if (prevpoweredpos.contains(blockPos)) {
+						return;
+					}
 				}
 				else {
-					prevbuttonpos.put(blockPos.immutable(), 1);
-					return;
-				}
-
-				if (!blockState.getValue(isPoweredProperty)) {
 					if (!prevpoweredpos.contains(blockPos)) {
 						return;
 					}
@@ -61,6 +60,7 @@ public class DoorEvent {
 				if (!prevpoweredpos.contains(blockPos)) {
 					return;
 				}
+				prevpoweredpos.remove(blockPos);
 			}
 		}
 		else {
@@ -68,6 +68,7 @@ public class DoorEvent {
 				if (!prevpoweredpos.contains(blockPos)) {
 					return;
 				}
+				prevpoweredpos.remove(blockPos);
 			}
 		}
 
