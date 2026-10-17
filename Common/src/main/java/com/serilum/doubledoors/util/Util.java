@@ -159,7 +159,7 @@ public class Util {
 
 		try {
 			if (Services.MODLOADER.isModLoaded("quark")) {
-				String quarkConfigPath = DataFunctions.getConfigDirectory() + File.separator + "quark-common.toml";
+				String quarkConfigPath = DataFunctions.getGameConfigDirectory() + File.separator + "quark-common.toml";
 				File quarkConfig = new File(quarkConfigPath);
 
 				if (quarkConfig.exists()) {
