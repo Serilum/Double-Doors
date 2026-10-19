@@ -85,7 +85,7 @@ public class DoorEvent {
 
 		for (BlockPos aroundPos : BlockPosFunctions.getBlocksAround(blockPos, false)) {
 			BlockState oBlockState = level.getBlockState(aroundPos);
-			if (Util.isDoorBlock(oBlockState)) {
+			if (Util.isDoorBlock(level, oBlockState)) {
 				doorBlockPos = aroundPos.immutable();
 				break;
 			}
@@ -94,7 +94,7 @@ public class DoorEvent {
 		if (doorBlockPos == null) {
 			for (BlockPos aroundPos : BlockPos.betweenClosed(blockPos.getX() - radius, blockPos.getY() - 1, blockPos.getZ() - radius, blockPos.getX() + radius, blockPos.getY() + 1, blockPos.getZ() + radius)) {
 				BlockState oBlockState = level.getBlockState(aroundPos);
-				if (Util.isDoorBlock(oBlockState)) {
+				if (Util.isDoorBlock(level, oBlockState)) {
 					doorBlockPos = aroundPos;
 					break;
 				}
@@ -112,10 +112,6 @@ public class DoorEvent {
 	}
 	
 	public static void onDoorClick(Level level, @Nullable Player player, InteractionHand interactionHand, BlockPos blockPos, BlockHitResult blockHitResult) {
-		if (level.isClientSide) {
-			return;
-		}
-
 		if (!interactionHand.equals(InteractionHand.MAIN_HAND)) {
 			return;
 		}
@@ -128,7 +124,7 @@ public class DoorEvent {
 		
 		BlockState clickState = level.getBlockState(blockPos);
 
-		if (!Util.isDoorBlock(clickState)) {
+		if (!Util.isDoorBlock(level, clickState)) {
 			return;
 		}
 
