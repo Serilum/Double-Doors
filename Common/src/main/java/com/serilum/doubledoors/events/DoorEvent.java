@@ -112,10 +112,6 @@ public class DoorEvent {
 	}
 	
 	public static void onDoorClick(Level level, @Nullable Player player, InteractionHand interactionHand, BlockPos blockPos, BlockHitResult blockHitResult) {
-		if (level.isClientSide) {
-			return;
-		}
-
 		if (!interactionHand.equals(InteractionHand.MAIN_HAND)) {
 			return;
 		}

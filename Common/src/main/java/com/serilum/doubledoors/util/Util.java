@@ -6,6 +6,7 @@ import com.natamus.collective.services.Services;
 import com.serilum.doubledoors.config.ConfigHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -29,7 +30,26 @@ public class Util {
 		return isDoorBlock(blockState.getBlock());
 	}
 	public static boolean isDoorBlock(Block block) {
-		return (block instanceof DoorBlock && ConfigHandler.enableDoors) || (block instanceof TrapDoorBlock && ConfigHandler.enableTrapdoors) || (block instanceof FenceGateBlock && ConfigHandler.enableFenceGates);
+		boolean isEnabledDoorBlock = (block instanceof DoorBlock && ConfigHandler.enableDoors) || (block instanceof TrapDoorBlock && ConfigHandler.enableTrapdoors) || (block instanceof FenceGateBlock && ConfigHandler.enableFenceGates);
+		if (!isEnabledDoorBlock) {
+			return false;
+		}
+
+		return !isBlacklisted(block);
+	}
+
+	private static boolean isBlacklisted(Block block) {
+		if (ConfigHandler.doorBlockBlacklist.isBlank()) {
+			return false;
+		}
+
+		String blockId = BuiltInRegistries.BLOCK.getKey(block).toString();
+		for (String blacklistedId : ConfigHandler.doorBlockBlacklist.split(",")) {
+			if (blacklistedId.strip().equals(blockId)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean isPressureBlock(BlockState blockState) {
@@ -82,13 +102,15 @@ public class Util {
 
 			BlockState oBlockState = level.getBlockState(toOpenBlockPos);
 			Block oBlock = oBlockState.getBlock();
-			
+
 			if (block instanceof DoorBlock) {
 				if (!ConfigHandler.enableDoors) {
 					continue;
 				}
 
-				level.setBlock(toOpenBlockPos, oBlockState.setValue(DoorBlock.OPEN, isOpen), 10);
+				if (oBlock instanceof DoorBlock oDoorBlock) {
+					oDoorBlock.setOpen(player, level, oBlockState, toOpenBlockPos, isOpen);
+				}
 			}
 			else if (block instanceof TrapDoorBlock) {
 				if (!ConfigHandler.enableTrapdoors) {
@@ -109,7 +131,7 @@ public class Util {
 			}
 		}
 
-		if (player != null) {
+		if (player != null && !level.isClientSide) {
 			player.swing(InteractionHand.MAIN_HAND);
 		}
 

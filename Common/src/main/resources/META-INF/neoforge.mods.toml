@@ -6,7 +6,7 @@ logoFile="icon.png"
 
 [[mods]]
 modId="doubledoors"
-version="7.4"
+version="7.5"
 displayName="Double Doors"
 displayURL="https://serilum.com/mod/double-doors"
 authors="Serilum"
@@ -22,7 +22,7 @@ If you would like to contribute too, check out https://serilum.com/donate Apprec
 [[dependencies.doubledoors]]
     modId="collective"
     type="required"
-    versionRange="[8.57,)"
+    versionRange="[8.58,)"
     ordering="NONE"
     side="BOTH"
 
