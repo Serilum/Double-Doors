@@ -15,6 +15,7 @@ public class ConfigHandler extends DuskConfig {
 	@Entry public static boolean enableDoors = true;
 	@Entry public static boolean enableFenceGates = false;
 	@Entry public static boolean enableTrapdoors = false;
+	@Entry public static String doorBlockBlacklist = "";
 	@Entry public static boolean enableModIncompatibilityCheck = true;
 
 	public static void initConfig() {
@@ -32,6 +33,9 @@ public class ConfigHandler extends DuskConfig {
 		));
 		configMetaData.put("enableTrapdoors", Arrays.asList(
 			"When enables, the mod works with double trapdoors."
+		));
+		configMetaData.put("doorBlockBlacklist", Arrays.asList(
+			"A comma separated list of block ids the mod ignores, so they keep opening one at a time. Works for doors, trapdoors and fence gates. For example 'create:andesite_door,supplementaries:gold_door'."
 		));
 		configMetaData.put("enableModIncompatibilityCheck", Arrays.asList(
 			"Checks if there are other mods loaded with double door functionality, such as Quark. If found, it edits a line in their config to disable double doors. Fixes doors not opening due to code being ran twice."
