@@ -4,10 +4,8 @@
   "package": "com.serilum.doubledoors.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "DoorBlockMixin",
-    "FenceGateBlockMixin",
-    "InteractWithDoorMixin",
-    "TrapDoorBlockMixin"
+    "BlockStateBaseMixin",
+    "InteractWithDoorMixin"
   ],
   "client": [
   ],

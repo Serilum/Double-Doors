@@ -18,12 +18,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
 
 public class DoorEvent {
 	private static final List<BlockPos> prevpoweredpos = new ArrayList<BlockPos>();
-	private static final HashMap<BlockPos, Integer> prevbuttonpos = new HashMap<BlockPos, Integer>();
 	
 	public static void onNeighbourNotice(Level level, BlockPos blockPos, BlockState blockState, EnumSet<Direction> notifiedSides, boolean forceRedstoneUpdate) {
 		if (level.isClientSide()) {
@@ -40,15 +38,12 @@ public class DoorEvent {
 				return;
 			}
 			else {
-				if (prevbuttonpos.containsKey(blockPos)) {
-					prevbuttonpos.remove(blockPos);
+				if (blockState.getValue(isPoweredProperty)) {
+					if (prevpoweredpos.contains(blockPos)) {
+						return;
+					}
 				}
 				else {
-					prevbuttonpos.put(blockPos.immutable(), 1);
-					return;
-				}
-
-				if (!blockState.getValue(isPoweredProperty)) {
 					if (!prevpoweredpos.contains(blockPos)) {
 						return;
 					}
@@ -61,6 +56,7 @@ public class DoorEvent {
 				if (!prevpoweredpos.contains(blockPos)) {
 					return;
 				}
+				prevpoweredpos.remove(blockPos);
 			}
 		}
 		else {
@@ -68,6 +64,7 @@ public class DoorEvent {
 				if (!prevpoweredpos.contains(blockPos)) {
 					return;
 				}
+				prevpoweredpos.remove(blockPos);
 			}
 		}
 
@@ -104,7 +101,7 @@ public class DoorEvent {
 
 		if (doorBlockPos != null) {
 			if (Util.processDoor(null, level, doorBlockPos, level.getBlockState(doorBlockPos), blockStateprop)) {
-				if (blockStateprop) {
+				if (blockStateprop && !prevpoweredpos.contains(blockPos)) {
 					prevpoweredpos.add(blockPos.immutable());
 				}
 			}
@@ -112,10 +109,6 @@ public class DoorEvent {
 	}
 	
 	public static void onDoorClick(Level level, @Nullable Player player, InteractionHand interactionHand, BlockPos blockPos, BlockHitResult blockHitResult) {
-		if (level.isClientSide()) {
-			return;
-		}
-
 		if (!interactionHand.equals(InteractionHand.MAIN_HAND)) {
 			return;
 		}
