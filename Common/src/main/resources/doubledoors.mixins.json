@@ -1,13 +1,11 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.natamus.doubledoors.mixin",
+  "package": "com.serilum.doubledoors.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "DoorBlockMixin",
-    "FenceGateBlockMixin",
-    "InteractWithDoorMixin",
-    "TrapDoorBlockMixin"
+    "BlockStateBaseMixin",
+    "InteractWithDoorMixin"
   ],
   "client": [
   ],
